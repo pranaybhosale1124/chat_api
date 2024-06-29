@@ -10,8 +10,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.JSON,
       allowNull: true
     },
-    timestamp: {
+    last_timestamp: {
       type: DataTypes.DATE,
+      allowNull: true
+    },
+    last_message: {
+      type: DataTypes.TEXT,
       allowNull: true
     }
   }, {

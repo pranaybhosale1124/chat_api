@@ -22,11 +22,20 @@ async function saveChat(senderId, recipientId, message) {
         if (existingChat) {
             // Update existing chat_data if chat_id already exists
             const updatedChatData = existingChat.chat_data.concat({ 'senderId': senderId, 'recipientId': recipientId, 'message': message, 'timestamp': new Date() });
-            await models.chat.update({ chat_data: updatedChatData }, { where: { chat_id } });
+            await models.chat.update({
+                chat_data: updatedChatData,
+                last_timestamp: new Date(),
+                last_message: message
+            }, { where: { chat_id } });
             console.log(`Chat with chat_id ${chat_id} updated`);
         } else {
             // Insert new chat_data if chat_id doesn't exist
-            await models.chat.create({ chat_id, chat_data: [{ 'senderId': senderId, 'recipientId': recipientId, 'message': message, 'timestamp': new Date() }] });
+            await models.chat.create({
+                chat_id,
+                chat_data: [{ 'senderId': senderId, 'recipientId': recipientId, 'message': message, 'timestamp': new Date() }],
+                last_timestamp: new Date(),
+                last_message: message
+            });
             console.log(`New chat with chat_id ${chat_id} inserted`);
         }
     } catch (error) {
