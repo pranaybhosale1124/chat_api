@@ -1,4 +1,4 @@
-var app = require('./app');
+var app = require('../app');
 var debug = require('debug')('chat-api:server');
 var http = require('http');
 var port = normalizePort(process.env.PORT || '3000');
@@ -14,7 +14,7 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 
-var setupWebSocket = require('./bin/socket');
+var setupWebSocket = require('./socket');
 
 setupWebSocket(server);
 
