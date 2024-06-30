@@ -1,2 +1,2 @@
 env: flex
-runtime: nodejs18.13.0
+runtime: node18.13.0
