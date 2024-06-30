@@ -1,4 +1,4 @@
-const { createHmac } = require('node:crypto');
+// const { createHmac } = require('node:crypto');
 const Sequelize = require('sequelize');
 const sequelize = require('../models/db-config')
 var initModels = require("../models/init-models");
@@ -9,8 +9,8 @@ var models = initModels(sequelize);
 async function getChatKey(sender, receiver) {
     const sortedNumbers = [sender, receiver].sort((a, b) => a - b);
     const key = sortedNumbers.join('_');
-    const hash = await createHmac('sha256','abcde' ).update(key).digest('hex');
-    return hash;
+    // const hash = await createHmac('sha256','abcde' ).update(key).digest('hex');
+    return key;
 }
 
 async function saveChat(senderId, recipientId, message) {
