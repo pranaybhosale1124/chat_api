@@ -1,16 +1,15 @@
-const crypto = require('crypto');
+const { createHmac } = require('node:crypto');
 const Sequelize = require('sequelize');
 const sequelize = require('../models/db-config')
 var initModels = require("../models/init-models");
 const chat = require('../models/chat');
-const { timeStamp } = require('console');
 
 var models = initModels(sequelize);
 
 async function getChatKey(sender, receiver) {
     const sortedNumbers = [sender, receiver].sort((a, b) => a - b);
     const key = sortedNumbers.join('_');
-    const hash = await crypto.createHash('sha256').update(key).digest('hex');
+    const hash = await createHmac('sha256','abcde' ).update(key).digest('hex');
     return hash;
 }
 
