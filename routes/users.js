@@ -9,7 +9,7 @@ async function getAllUsers() {
   try {
     return await sequelize.transaction(async t => {
       const users = await models.user.findAll({ transaction: t });
-      console.log(users);
+      // console.log(users);
       return users;
     })
   } catch (error) {

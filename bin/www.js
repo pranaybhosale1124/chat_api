@@ -5,6 +5,7 @@ var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 const { Server } = require("socket.io");
+const {connectRedisClient} = require('./cache-store')
 
 // Create HTTP server.
 var server = http.createServer(app);
@@ -57,6 +58,7 @@ function onError(error) {
 }
 
 function onListening() {
+  connectRedisClient()
   console.log(`listening on ${port}`);
   var addr = server.address();
   var bind = typeof addr === 'string'
