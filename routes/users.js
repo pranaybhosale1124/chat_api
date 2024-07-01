@@ -22,7 +22,6 @@ async function getUserById(user_id) {
   try {
     return await sequelize.transaction(async t => {
       const users = await models.user.findOne({ where: { user_id } }, { transaction: t });
-      console.log(users);
       return users;
     })
   } catch (error) {

@@ -3,25 +3,28 @@ const redisClient = redis.createClient();
 
 async function connectRedisClient() {
     await redisClient.connect()
-
 }
-
 
 async function storeChat(key, data) {
     try {
-        data = JSON.stringify(data)
+        data = JSON.stringify(data);
         console.log(key, data);
-        await redisClient.set(key, data); // Ensure value is serialized
-        console.log('Object stored in Redis');
+        await redisClient.set(key, data);
+        return true;
     } catch (err) {
         console.error('Error storing object:', err);
+        return false;
     }
 }
 
 async function getChat(key) {
     try {
         const data = await redisClient.get(key);
-        return data ? JSON.parse(data) : null;
+        if (data) {
+            return JSON.parse(data);
+        } else {
+            return null;
+        }
     } catch (err) {
         console.error('Error retrieving object:', err);
         return null;
@@ -30,31 +33,43 @@ async function getChat(key) {
 
 async function updateChat(key, data) {
     try {
-        const chat = await getChat(key);
-        console.log(chat);
-        if (chat) {
-            chat = JSON.parse(chat)
-            chat.chat_data = [...chat.chat_data, data]; // Use spread operator for updates
-            console.log(chat);
-            let result = await storeChat(key, chat);
+        const existingChat = await getChat(key);
+
+        if (existingChat) {
+            try {
+                const { chat_data } = JSON.parse(existingChat); // Parse and destructure
+                const updatedChat = { ...existingChat, chat_data: [...chat_data, data] };
+                const updateResult = await storeChat(key, updatedChat);
+                return updateResult ? true : false;
+            } catch (parseErr) {
+                console.error('Error parsing existing chat data:', parseErr);
+                return false;
+            }
         } else {
-            await storeChat(key, data)
+            const storeResult = await storeChat(key, data);
+            return storeResult ? true : false;
         }
     } catch (err) {
         console.error('Error updating object:', err);
+        return false;
     }
 }
 
 async function deletePair(keyToDelete) {
-    redisClient.DEL(keyToDelete, (err, deleted) => {
-        if (err) {
-            console.error('Error deleting key:', err);
-        } else if (deleted === 1) {
+    try {
+        const deleted = await redisClient.DEL(keyToDelete);
+        if (deleted === 1) {
             console.log('Key-value pair deleted successfully');
+            return true;
         } else {
             console.log('Key not found');
+            return false;
         }
-    })
+    } catch (err) {
+        console.error('Error deleting key:', err);
+        return false;
+    }
 }
+
 
 module.exports = { connectRedisClient, storeChat, updateChat, getChat, deletePair };
