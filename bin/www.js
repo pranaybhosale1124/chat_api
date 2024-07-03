@@ -1,4 +1,4 @@
-var app = require('../app');
+var app = require('../api/index');
 var debug = require('debug')('chat-api:server');
 var http = require('http');
 var port = normalizePort(process.env.PORT || '3000');
