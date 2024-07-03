@@ -22,11 +22,13 @@ function setupWebSocket(server) {
         // On Incoming Message
         socket.on('message', (data) => {
             const recipientSocketId = users[data.recipientId];
+            const senderSocketId = users[data.senderId];
             if (recipientSocketId) {
                 io.to(recipientSocketId).emit('message', data);
             } else {
                 console.log(`Recipient ${data.recipientId} is not online.`);
             }
+            io.to(senderSocketId).emit('message', data);
             saveChat(data.senderId, data.recipientId, data.message)
         });
 

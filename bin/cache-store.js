@@ -1,5 +1,7 @@
 const redis = require('redis');
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+    url: "rediss://default:AZUEAAIncDFkOWM5NGYxZWNjMTM0YWQxYjM2YjUyNzZmOTUwMjg1M3AxMzgxNDg@humane-sponge-38148.upstash.io:6379"
+});
 
 async function connectRedisClient() {
     await redisClient.connect()

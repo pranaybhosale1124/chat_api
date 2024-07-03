@@ -1,14 +1,19 @@
 var express = require('express');
 var router = express.Router();
+const Seq = require('sequelize');
 const { verifyToken, authorizeUser } = require('../auth');
 const sequelize = require('../models/db-config')
 var initModels = require("../models/init-models");
 var models = initModels(sequelize);
 
-async function getAllUsers() {
+async function getAllUsers(user_id) {
   try {
     return await sequelize.transaction(async t => {
-      const users = await models.user.findAll({ transaction: t });
+      const users = await models.user.findAll({
+        where: { 'user_id': { [Seq.Op.ne]: user_id } },
+        transaction: t
+      }
+      );
       // console.log(users);
       return users;
     })
@@ -30,9 +35,10 @@ async function getUserById(user_id) {
   }
 }
 
-router.get('/get-all-users', async (req, res) => {
+router.get('/get-all-users/:user_id', async (req, res) => {
   try {
-    const users = await getAllUsers();
+    let user_id=req.params.user_id
+    const users = await getAllUsers(user_id);
     res.status(200).json({ data: users });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching users' });
