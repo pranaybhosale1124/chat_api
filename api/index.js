@@ -26,7 +26,7 @@ const corsOptions = {
   credentials: true, // This allows cookies to be sent with the requests if needed
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
