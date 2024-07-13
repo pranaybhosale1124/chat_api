@@ -1,6 +1,6 @@
 const redis = require('redis');
 const redisClient = redis.createClient({
-    url: "rediss://default:AZUEAAIncDFkOWM5NGYxZWNjMTM0YWQxYjM2YjUyNzZmOTUwMjg1M3AxMzgxNDg@humane-sponge-38148.upstash.io:6379"
+    url:process.env.CACHE_URL
 });
 
 async function connectRedisClient() {
