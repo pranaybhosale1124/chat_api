@@ -9,7 +9,7 @@ function setupWebSocket(server) {
     const io = new Server(server, {
         cors: {
             origin: "*",
-            methods: ["GET", "POST"]
+            methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
         }
     });
 
