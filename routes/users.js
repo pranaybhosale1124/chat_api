@@ -54,23 +54,10 @@ router.get('/get-user/:id', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
-  const { username } = req.body;
-  try {
-    const user = await models.user.findOne({ where: { user_name: username } });
-    if (user) {
-      res.status(200).json({ message: 'Login successful', 'user': user });
-    } else {
-      res.status(401).json({ message: 'Invalid credentials' });
-    }
-  } catch (error) {
-    res.status(500).send({ message: 'Error logging in', error });
-  }
-});
 
 router.get('/login-by-google', verifyToken, authorizeUser, async (req, res) => {
   console.log(req.user);
-  res.json({ message: 'This is a protected route', user: req.user });
+  res.status(200).json(req.user)
 });
 
 router.put('/update-user/:user_id', async (req, res) => {

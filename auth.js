@@ -1,9 +1,11 @@
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client('812383719002-m9ng6v57jds0cd452f15nlq7lomivtca.apps.googleusercontent.com');
-
-
+const { welcomeMessage } = require('./public/welcome-message');
+const { saveChat, getChatKey } = require('./service/chat-service')
 const sequelize = require('./models/db-config')
 var initModels = require("./models/init-models");
+const { updateRecentChat } = require('./service/recent-chat-service');
+
 var models = initModels(sequelize);
 
 const verifyToken = async (req, res, next) => {
@@ -45,11 +47,17 @@ const authorizeUser = async (req, res, next) => {
         information: '',
         contact_number: ''
       });
-    }
 
+      await saveChat( welcomeMessage.sender, user.user_id, welcomeMessage.message)
+
+      await updateRecentChat({
+        recipientId: user.user_id,
+        senderId: welcomeMessage.sender
+      })
+    }
     req.user = user;
 
-    res.status(200).json(user);
+    next();
   } catch (error) {
     console.error(error);
     res.status(404).json({ message: 'USER NOT FOUND' });

@@ -1,11 +1,8 @@
 const { Server } = require("socket.io");
-const {saveChat}=require('../service/chat-service')
-let users = {};
-const RecentChat = require('../models/recent_chat'); // Adjust path as necessary
+const { saveChat } = require('../service/chat-service')
+const { updateRecentChat } = require('../service/recent-chat-service')
 
-const sequelize = require('../models/db-config')
-var initModels = require("../models/init-models");
-var models = initModels(sequelize);
+let users = {};
 
 function setupWebSocket(server) {
     const io = new Server(server, {
@@ -30,25 +27,7 @@ function setupWebSocket(server) {
                 io.to(recipientSocketId).emit('message', data);
             } else {
                 // Update or create recent chat record for the offline recipient
-                try {
-                    const existingChat = await models.recent_chat.findOne({
-                        where: { user_id: data.recipientId }
-                    });
-
-                    if (existingChat) {
-                        // Update the chat array with the senderId
-                        const chatArray = [data.senderId, ...existingChat.chat];
-                        await existingChat.update({ chat: chatArray });
-                    } else {
-                        // Create a new record if not found
-                        await models.recent_chat.create({
-                            user_id: data.recipientId,
-                            chat: [data.senderId]
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error updating or creating recent chat record:', error);
-                }
+                updateRecentChat(data)
             }
 
             if (senderSocketId) {
