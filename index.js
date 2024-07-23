@@ -15,6 +15,7 @@ const cors = require('cors');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const chatRouter = require('./routes/chat');
+const recentChatRouter = require('./routes/recent_chats');
 
 // WebSocket setup
 const setupWebSocket = require('./bin/socket');
@@ -44,6 +45,7 @@ app.use(cors());
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
 app.use('/chat', chatRouter);
+app.use('/recent-chats', recentChatRouter);
 
 // Handle 404 errors
 app.use(function(req, res, next) {
