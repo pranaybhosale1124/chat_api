@@ -1,15 +1,11 @@
 const { createHmac } = require('node:crypto');
-const Sequelize = require('sequelize');
-const sequelize = require('../models/db-config')
-var initModels = require("../models/init-models");
-const chat = require('../models/chat');
-const { storeChat, updateChat, getChat } = require('../bin/cache-store')
-var models = initModels(sequelize);
+const Chat = require('../models/chat');
+const { storeChat, updateChat, getChat } = require('../bin/cache-store');
 
 async function getChatKey(sender, receiver) {
     const sortedNumbers = [sender, receiver].sort((a, b) => a - b);
     const key = sortedNumbers.join('_');
-    const hash = await createHmac('sha256', 'abcde').update(key).digest('hex');
+    const hash = createHmac('sha256', 'abcde').update(key).digest('hex');
     return hash;
 }
 
@@ -26,36 +22,37 @@ async function saveChat(senderId, recipientId, message) {
             const updatedChatData = cachedChat.chat_data.concat({ 'senderId': senderId, 'recipientId': recipientId, 'message': message, 'timestamp': new Date() });
             await storeChat(chat_id, { ...cachedChat, chat_data: updatedChatData });
             if (updatedChatData.length % 10 === 0) {
-                await models.chat.update({
+                await Chat.updateOne({ chat_id }, {
                     chat_data: updatedChatData,
                     last_timestamp: new Date(),
                     last_message: message
-                }, { where: { chat_id } });
+                });
             }
         } else {
             // 2. Fetch Chat Data from Model (if not found in cache)
-            const existingChat = await models.chat.findOne({ where: { chat_id } });
+            const existingChat = await Chat.findOne({ chat_id });
 
             if (existingChat) {
                 // Update existing chat data in model and potentially cache it
                 const updatedChatData = existingChat.chat_data.concat({ 'senderId': senderId, 'recipientId': recipientId, 'message': message, 'timestamp': new Date() });
                 if (existingChat.chat_data.length % 10 === 1) {
-                    await models.chat.update({
+                    await Chat.updateOne({ chat_id }, {
                         chat_data: updatedChatData,
                         last_timestamp: new Date(),
                         last_message: message
-                    }, { where: { chat_id } });
+                    });
                 }
                 // Update cache with the latest data (optional)
-                await storeChat(chat_id, { ...existingChat, chat_data: updatedChatData });
+                await storeChat(chat_id, { ...existingChat._doc, chat_data: updatedChatData });
             } else {
                 // Insert new chat data in model and cache it
-                await models.chat.create({
+                const newChat = new Chat({
                     chat_id,
                     chat_data: [{ 'senderId': senderId, 'recipientId': recipientId, 'message': message, 'timestamp': new Date() }],
                     last_timestamp: new Date(),
                     last_message: message
                 });
+                await newChat.save();
 
                 // Store new chat data in cache
                 await storeChat(chat_id, {

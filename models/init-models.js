@@ -1,10 +1,10 @@
 var DataTypes = require("sequelize").DataTypes;
-var _chat = require("./chat");
+// var _chat = require("./chat");
 var _recent_chat = require("./recent_chat");
 var _user = require("./user");
 
 function initModels(sequelize) {
-  var chat = _chat(sequelize, DataTypes);
+  // var chat = _chat(sequelize, DataTypes);
   var recent_chat = _recent_chat(sequelize, DataTypes);
   var user = _user(sequelize, DataTypes);
 
@@ -12,7 +12,6 @@ function initModels(sequelize) {
   user.hasMany(recent_chat, { as: "recent_chats", foreignKey: "user_id"});
 
   return {
-    chat,
     recent_chat,
     user,
   };

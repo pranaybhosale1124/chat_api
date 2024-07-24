@@ -10,7 +10,6 @@ async function connectRedisClient() {
 async function storeChat(key, data) {
     try {
         data = JSON.stringify(data);
-        console.log(key, data);
         await redisClient.set(key, data);
         return true;
     } catch (err) {

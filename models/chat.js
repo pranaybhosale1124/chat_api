@@ -1,36 +1,18 @@
-const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('chat', {
-    chat_id: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      primaryKey: true
-    },
-    chat_data: {
-      type: DataTypes.JSON,
-      allowNull: true
-    },
-    last_timestamp: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    last_message: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    }
-  }, {
-    sequelize,
-    tableName: 'chat',
-    timestamps: false,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "chat_id" },
-        ]
-      },
-    ]
-  });
-};
+const mongoDB = require('../models/mongo-config');
+const Schema = mongoDB.Schema;
+
+const chatSchema = new Schema({
+    chat_id: { type: String, required: true, unique: true },
+    chat_data: [{
+        message: { type: String, required: true },
+        senderId: { type: Number, required: true },
+        recipientId: { type: Number, required: true },
+        timestamp: { type: Date, default: Date.now }
+    }],
+    last_message: { type: String },
+    last_timestamp: { type: Date }
+}, { timestamps: true });
+
+const Chat = mongoDB.model('chats', chatSchema);
+
+module.exports = Chat;

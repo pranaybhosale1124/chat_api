@@ -14,7 +14,6 @@ async function getAllUsers(user_id) {
         transaction: t
       }
       );
-      // console.log(users);
       return users;
     })
   } catch (error) {
@@ -56,7 +55,6 @@ router.get('/get-user/:id', async (req, res) => {
 
 
 router.get('/login-by-google', verifyToken, authorizeUser, async (req, res) => {
-  console.log(req.user);
   res.status(200).json(req.user)
 });
 
