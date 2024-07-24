@@ -9,7 +9,6 @@ const chatSchema = new Schema({
         recipientId: { type: Number, required: true },
         timestamp: { type: Date, default: Date.now }
     }],
-    last_message: { type: String },
     last_timestamp: { type: Date }
 }, { timestamps: true });
 

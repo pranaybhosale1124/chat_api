@@ -24,8 +24,7 @@ async function saveChat(senderId, recipientId, message) {
             if (updatedChatData.length % 10 === 0) {
                 await Chat.updateOne({ chat_id }, {
                     chat_data: updatedChatData,
-                    last_timestamp: new Date(),
-                    last_message: message
+                    last_timestamp: new Date()
                 });
             }
         } else {
@@ -39,7 +38,6 @@ async function saveChat(senderId, recipientId, message) {
                     await Chat.updateOne({ chat_id }, {
                         chat_data: updatedChatData,
                         last_timestamp: new Date(),
-                        last_message: message
                     });
                 }
                 // Update cache with the latest data (optional)
@@ -50,7 +48,6 @@ async function saveChat(senderId, recipientId, message) {
                     chat_id,
                     chat_data: [{ 'senderId': senderId, 'recipientId': recipientId, 'message': message, 'timestamp': new Date() }],
                     last_timestamp: new Date(),
-                    last_message: message
                 });
                 await newChat.save();
 
@@ -59,7 +56,6 @@ async function saveChat(senderId, recipientId, message) {
                     chat_id,
                     chat_data: [{ 'senderId': senderId, 'recipientId': recipientId, 'message': message, 'timestamp': new Date() }],
                     last_timestamp: new Date(),
-                    last_message: message
                 });
             }
         }
